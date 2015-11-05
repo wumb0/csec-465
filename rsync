@@ -1,0 +1,1 @@
+rsync -Pav -e 'ssh -i /root/.ssh/id_rsa ' /var/www/html/ apache2.phryanjr.com:/var/www/html/

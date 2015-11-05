@@ -1,0 +1,2 @@
+enable httpd network connection: setsebool -P httpd_can_network_connect=1
+salt command execution: salt '*' cmd.run 'command'
