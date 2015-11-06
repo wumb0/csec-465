@@ -4,6 +4,7 @@ from flask.ext.admin import AdminIndexView, BaseView
 from flask.ext.admin.contrib.sqla.view import ModelView
 from flask.ext.login import current_user as user
 from flask import redirect, url_for, flash
+from app.models import Post
 
 class ProtectedBaseView(BaseView):
     def is_accessible(self):
@@ -19,8 +20,11 @@ class ProtectedBaseView(BaseView):
 class ProtectedModelView(ModelView, ProtectedBaseView):
     pass
 
-class ProtectedAdminView(AdminIndexView, ProtectedBaseView):
+class ProtectedIndexView(AdminIndexView, ProtectedBaseView):
     pass
 
 class ProtectedFileAdmin(FileAdmin, ProtectedBaseView):
+    pass
+
+class PostModelView(ProtectedModelView):
     pass

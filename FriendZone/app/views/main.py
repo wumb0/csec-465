@@ -1,9 +1,8 @@
-from app import db, lm, google
+from app import db, lm, google, app
 from flask import render_template, flash, redirect, session, url_for, Blueprint
-from flask import login_user, logout_user, current_user, login_required
-from add.models import *
+from flask.ext.login import login_user, logout_user, current_user, login_required
+from app.models import *
 #from app.forms import *
-
 
 @app.errorhandler(404)
 def not_found_error(error):
@@ -33,4 +32,10 @@ def login():
     Returns: a google authorization handler
     '''
     session.pop('google_token', None)
-    return google.authorize(callback=url_for('main.authorized', _external=True))
+    return google.authorize(callback=url_for('authorized', _external=True))
+
+@app.route('/')
+@app.route('/home')
+@app.route('/index')
+def index():
+    return render_template("index.html", title="Home")

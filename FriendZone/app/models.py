@@ -1,5 +1,11 @@
 from app import db
 from datetime import datetime
+
+friends_table = db.Table('friends_table',
+    db.Column('friend_id', db.Integer, db.ForeignKey('user.id')),
+    db.Column('friend_id', db.Integer, db.ForeignKey('user.id'))
+)
+
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), index=True, unique=True)
@@ -9,8 +15,12 @@ class User(db.Model):
     bio = db.Column(db.String(5000))
     birthday = db.Column(db.Date)
     last_seen = db.Column(db.DateTime, default=datetime.now())
-    friends = db.relationship('User')
-    posts = db.relationship('Post', backref = "user", lazy='dynamic')
+    posts = db.relationship('Post', lazy='dynamic')
+    friends = db.relationship('User',
+                              secondary=friends_table,
+                              primaryjoin=(friends_table.c.friend_id == id),
+                              secondaryjoin=(friends_table.c.friend_id == id),
+                              lazy='dynamic')
 
     def is_authenticated(self):
         return True
@@ -44,9 +54,11 @@ class User(db.Model):
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     content = db.Column(db.String(10000))
-    timestamp = db.Column(db.DateTime, defaule=datetime.now())
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    poster_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    timestamp = db.Column(db.DateTime, default=datetime.now())
+    user_id = db.Column(db.Integer, db.ForeignKey(User.id), nullable=False)
+    poster_id = db.Column(db.Integer, db.ForeignKey(User.id), nullable=False)
+    user = db.relationship(User, foreign_keys=user_id)
+    poster = db.relationship(User, foreign_keys=poster_id)
 
     def timestamp_str(self):
         return self.timestamp.strftime('%A, %B %d %Y %I:%M%p')

@@ -10,11 +10,14 @@ from config import basedir, GOOGLE_CONSUMER_KEY, GOOGLE_CONSUMER_SECRET, \
 BASE_ADMINS
 from flask.ext.admin import Admin
 from flask_admin.base import MenuLink
+from flask.ext.elasticsearch import FlaskElasticsearch
 
 # Initialize the app and database, import the config
 app = Flask(__name__)
 app.config.from_object('config')
 db = SQLAlchemy(app)
+es = FlaskElasticsearch()
+es.init_app(app)
 
 #setup Google oauth for login
 oauth = OAuth(app)
@@ -46,12 +49,8 @@ for ad in BASE_ADMINS:
 from app.views import main, admin
 
 #admin setup
-#TODO: define admin.py in app/views, define ProtectedIndexView, PostModelView, ProtectedFileAdmin
 _admin = Admin(app, 'FriendZone Admin', template_mode='bootstrap3',
               index_view=admin.ProtectedIndexView())
 _admin.add_link(MenuLink(name='Back to Site', url='/'))
-_admin.add_view(admin.PostModelView())
+#_admin.add_view(admin.PostModelView(models.Post, db.session))
 _admin.add_view(admin.ProtectedFileAdmin(os.path.join(basedir, 'app/static/uploads'), '/static/uploads/', name="Uploads"))
-
-#blueprints are each section of the app
-app.register_blueprint(main.main)
