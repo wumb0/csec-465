@@ -12,13 +12,14 @@
         <meta http-squiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="{{url_for('static', filename='boots/css/bootstrap.darkly.min.css')}}">
-        <link rel="stylesheet" href="{{url_for('static', filename='fa/css/font-awesome.css')}}">
+        <link rel="stylesheet" href="{{url_for('static', filename='fa/css/font-awesome.min.css')}}">
+        <link rel="stylesheet" href="{{url_for('static', filename='custom/custom.css')}}">
         <link rel="shortcut icon" href="{{url_for('static', filename='img/favicon.ico')}}">
         {% block head %}
         {% endblock head %}
     </head>
     <body role="document">
-    <nav class="navbar navbar-fixed-top">
+    <nav class="navbar navbar-default navbar-fixed-top">
         <div class="container fluid">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls='navbar'>
@@ -31,20 +32,50 @@
             </div>
             <div id="navbar" class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li id="profile"><a href="#"><i class="fa-fa user"></i> Profile</a></li>
+                    <li id="profile"><a href="{{url_for('profile')}}"><i class="fa fa-user"></i> Profile</a></li>
+                    {% if g.user.is_authenticated %}
+                    <li id="logout"><a href="{{url_for('logout')}}"><i class="fa fa-hand-peace-o"></i> Logout</a></li>
+                    {% else %}
+                    <li id="login"><a href="{{url_for('login')}}"><i class="fa fa-lock"></i> Login</a></li>
+                    {% endif %}
                 </ul>
             </div>
         </div>
     </nav>
+        {% with messages = get_flashed_messages(with_categories=True) %}
+        {% if messages|length %}
+        <div class="container top-pad">
+        {% for category, message in messages %}
+            {% if category == 'error' %}
+                <div class="alert alert-danger alert-dismissible fade in">
+            {% elif category == 'good' %}
+                <div class="alert alert-success alert-dismissible fade in">
+            {% elif category == 'warning' %}
+                <div class="alert alert-warning alert-dismissible fade in">
+            {% else %}
+                <div class="alert alert-info alert-dismissible fade in">
+            {% endif %}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            {{message}}
+            </div>
+        {% endfor %}
+        </div>
+        <div class="container">
+        {% else %}
+        <div class="container top-pad">
+        {% endif %}
+        {% endwith %}
     {% block content %}
-        
+
     {% endblock content %}
+    </div>
     </body>
     <footer class="footer">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
         <script src="{{url_for('static', filename='boots/js/bootstrap.min.js')}}"></script>
         {% block footer %}
-            
         {% endblock footer %}
     </footer>
 </html>
