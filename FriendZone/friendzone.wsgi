@@ -1,4 +1,4 @@
-#!/var/www/rc3site/flask/bin/python
+#!/var/www/friendzone/flask/bin/python
 
 from flup.server.fcgi import WSGIServer
 import sys
