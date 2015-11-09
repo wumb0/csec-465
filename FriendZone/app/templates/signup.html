@@ -25,6 +25,14 @@
             </div>
             <div class="row field-sep">
                 <div class="col-md-3">
+                    {{form.linkname.label}} <a href="#" data-placement="top" data-toggle="tooltip" title="You user data and profile will be at this link name">?</a>
+                </div>
+                <div class="col-md-6">
+                    {{form.linkname}}
+                </div>
+            </div>
+            <div class="row field-sep">
+                <div class="col-md-3">
                     {{form.email.label}}
                 </div>
                 <div class="col-md-6">
@@ -72,3 +80,10 @@
     </div>
 </div>
 {% endblock content %}
+{% block footer %}
+<script>
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    })
+</script>
+{% endblock footer %}

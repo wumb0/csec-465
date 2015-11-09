@@ -32,8 +32,9 @@
             </div>
             <div id="navbar" class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li id="profile"><a href="{{url_for('profile')}}"><i class="fa fa-user"></i> Profile</a></li>
                     {% if g.user.is_authenticated %}
+                    <li id="profile"><a href="{{url_for('profile')}}"><i class="fa fa-user"></i> Profile</a></li>
+                    <li id="friends"><a href="{{url_for('friends')}}"><i class="fa fa-users"></i> Friends</a></li>
                     <li id="logout"><a href="{{url_for('logout')}}"><i class="fa fa-hand-peace-o"></i> Logout</a></li>
                     {% else %}
                     <li id="login"><a href="{{url_for('login')}}"><i class="fa fa-lock"></i> Login</a></li>

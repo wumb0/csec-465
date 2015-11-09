@@ -3,8 +3,18 @@
 <div class="page-header">
     <div class="row">
         <div class="col-lg-8 col-md-7 col-sm-6">
-            <h1>Name</h1>
+            <h1>{{user.name}}</h1>
         </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-8 col-md-7 col-sm-6">
+        {% for post in user.posts %}
+        <div class="row">
+            {{post.poster}} - {{post.user}} <br>
+            {{post.content}}
+        </div>
+        {% endfor %}
     </div>
 </div>
 {% endblock content %}

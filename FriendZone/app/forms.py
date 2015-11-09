@@ -21,7 +21,6 @@ class LoginForm(Form):
             return True
         except:
             raise ValidationError("Invalid username or bad password")
-            return False
 
 class SignupForm(LoginForm):
     name      = StringField("Name:", validators=[DataRequired(), Length(max=50)])
@@ -29,6 +28,7 @@ class SignupForm(LoginForm):
     birthday  = DateField('Birthday (MM/DD/YYYY):', validators=[DataRequired()], format='%m/%d/%Y')
     nickname  = StringField('Nickname:', validators=[Length(max=40)])
     bio       = TextAreaField('Bio:', validators=[Length(max=5000)])
+    linkname  = StringField('Link Name:', validators=[DataRequired(), Length(max=20)])
     confirm_password = PasswordField('Confirm Password:', validators=[DataRequired()])
 
     def validate_password(self, field):
@@ -41,3 +41,10 @@ class SignupForm(LoginForm):
             raise ValidationError("Passwords do not match")
         return True
 
+    def validate_linkname(self, field):
+        if len(User.query.filter_by(linkname=field.data).all()):
+            raise ValidationError("That linkname has already been chosen!")
+
+    def validate_email(self, field):
+        if len(User.query.filter_by(email=field.data).all()):
+            raise ValidationError("That email address is already in use")

@@ -1,5 +1,5 @@
 from app import db, lm, app
-from flask import render_template, flash, redirect, session, url_for, g
+from flask import render_template, flash, redirect, session, url_for, g, abort
 from flask.ext.login import login_user, logout_user, current_user, login_required
 from app.models import *
 from app.crypto import get_hashstr
@@ -47,12 +47,14 @@ def signup():
                     name=form.name.data,
                     birthday=form.birthday.data,
                     role=0,
+                    linkname=form.linkname.data,
                     bio=form.bio.data,
                     nickname=form.nickname.data,
                     verified=True)
         db.session.add(user)
         db.session.commit()
         flash("Registered successfully!", category='good')
+        return redirect(url_for('login'))
     else:
         for e in form.errors:
             flash(e + ": " + form.errors[e][0], "error")
@@ -65,15 +67,60 @@ def logout():
     session.clear()
     return redirect(url_for('index'))
 
+@app.route('/friends')
+@login_required
+def friends():
+    return render_template("friends.html", title="Friends")
+
 @app.route('/')
 @app.route('/home')
 @app.route('/index')
 def index():
     return render_template("index.html", title="Home")
 
+@app.route('/testfriend')
+def testfriend():
+    user = User.query.filter_by(id=2).one()
+    req = Request(requesting_user_id=g.user.id, requested_user_id=user.id)
+    db.session.add(req)
+    db.session.commit()
+
+@app.route('/listreq')
+def listfriend():
+    print g.user.friends_requested.one()
+
+@app.route('/acceptfriend')
+def acceptfriend():
+    reqs = g.user.friend_requests.all()
+    for req in reqs:
+        g.user.friends.append(req.requesting_user)
+        req.requesting_user.friends.append(g.user)
+        db.session.delete(req)
+    db.session.add(g.user)
+    db.session.commit()
+    print g.user.friends.all()
+
+
+@app.route('/testpost')
+def testpost():
+    post = Post(content="Are you my dad?? More at 11.",
+                user_id=1,
+                poster_id=g.user.id)
+    db.session.add(post)
+    db.session.commit()
+
 @app.route('/profile')
 def profile():
-    return render_template('profile.html', title='Profile')
+    return render_template('profile.html', title='Profile', user=g.user)
+
+@app.route('/<linkname>/profile')
+@login_required
+def user_profile(linkname):
+    try:
+        user = User.query.filter_by(linkname=linkname).one()
+    except:
+        abort(404)
+    return render_template('profile.html', title='Profile', user=user)
 
 @app.errorhandler(404)
 def not_found_error(error):
