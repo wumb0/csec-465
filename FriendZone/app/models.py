@@ -18,6 +18,9 @@ class User_ES(DocType):
     nickname = String(analyzer='snowball')
     email = String(analyzer='snowball')
 
+    class Meta:
+        index = 'default'
+
     def save(self, ** kwargs):
         return super(User_ES, self).save(** kwargs)
 
@@ -116,8 +119,8 @@ class Post_ES(DocType):
     user_id = Integer(analyzer='snowball')
     poster_id = Integer(analyzer='snowball')
     content = String(analyzer='snowball')
-    name = String(analyzer='snowball')
     timestamp = Date()
-
+    class Meta:
+        index = 'default'
     def save(self, ** kwargs):
-        return super(User_ES, self).save(** kwargs)
+        return super(Post_ES, self).save(** kwargs)

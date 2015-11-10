@@ -153,10 +153,18 @@ def testes_search():
 @app.route('/testesfriend')
 def testesfriend():
     s = User_ES.search()
-    s = s.filter('term').query('match', id = 1)
+    s = s.query('match', id = 1)
     results = s.execute()
     for user in results:
         return user.name
+
+@app.route('/testespost')
+def testespost():
+    s = Post_ES.search()
+    s = s.query('match', post_id = 4)
+    results = s.execute()
+    for post in results:
+        return post.content
 
 @app.route('/profile')
 def profile():
@@ -193,6 +201,12 @@ def user_profile(linkname):
                         poster_id=g.user.id)
             db.session.add(post)
             db.session.commit()
+            post_es = Post_ES(post_id = post.id,
+                            user_id = user.id,
+                            poster_id = g.user.id,
+                            content = post_form.content.data,
+                            name = post.timestamp)
+            post_es.save()
         else:
             flash("You cannot post here, you are not friends with " + user.name, category='error')
         post_form.content.data = ""
