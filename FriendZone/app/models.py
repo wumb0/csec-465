@@ -1,4 +1,4 @@
-#from app import db
+from app import db
 from datetime import datetime
 from elasticsearch_dsl import DocType, String, Date, Integer
 from elasticsearch_dsl.connections import connections
@@ -20,7 +20,6 @@ class User_ES(DocType):
     bio = String(analyzer='snowball')
     birthday = Date()
     last_seen = Date()
-    verified =
 
     email = String(analyzer='snowball')
     email = String(analyzer='snowball')
