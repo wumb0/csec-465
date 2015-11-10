@@ -6,6 +6,7 @@ from app.crypto import get_hashstr
 from app.forms import *
 from datetime import datetime
 from sqlalchemy import desc
+import json
 
 
 @app.before_request
@@ -89,33 +90,32 @@ def friends_api():
     Case4: user deletes a user from their friends list
     '''
     try:
-        data = request.get_data()
-        key, id = data.split("-")
-        req = Request.query.filter_by(id=id).one()
+        data = json.loads(request.get_data())
+        req = Request.query.filter_by(id=data['id']).one()
     except:
         try:
-            user = User.query.filter_by(id=id).one()
-            if key == "del_fr":
+            user = User.query.filter_by(id=data['id']).one()
+            if data['action'] == "del_fr":
                 g.user.friends.remove(user)
                 user.friends.remove(g.user)
                 db.session.commit()
                 return "", 200
-            elif key == "add_fr" and user not in g.user.friends:
+            elif data['action'] == "add_fr" and user not in g.user.friends:
                 req = Request(requesting_user_id=g.user.id, requested_user_id=user.id)
                 db.session.add(req)
                 db.session.commit()
                 return "", 200
         except:
             return "", 400
-    if key == "add_req" and req.requested_user_id == g.user.id:
+    if data['action'] == "add_req" and req.requested_user_id == g.user.id:
         g.user.friends.append(req.requesting_user)
         req.requesting_user.friends.append(g.user)
         db.session.add(req.requesting_user)
         db.session.add(g.user)
         db.session.delete(req)
-    elif key == "del_req" and req.requested_user_id == g.user.id:
+    elif data['action'] == "del_req" and req.requested_user_id == g.user.id:
         db.session.delete(req)
-    elif key == "del_reqd" and req.requesting_user_id == g.user.id:
+    elif data['action'] == "del_reqd" and req.requesting_user_id == g.user.id:
         db.session.delete(req)
     else:
         return "", 400
@@ -197,10 +197,12 @@ def profile():
 @app.route('/api/posts', methods=['POST'])
 @login_required
 def posts_api():
+    print str(session.keys())
     try:
-        key, id = request.get_data().split("-")
-        post = Post.query.filter_by(id=id).one()
-        if key == "del_post" and (g.user == post.poster or g.user == post.user):
+        data = json.loads(request.get_data())
+        print data['csrf_token']
+        post = Post.query.filter_by(id=data['id']).one()
+        if data['action'] == "del_post" and (g.user == post.poster or g.user == post.user):
             db.session.delete(post)
             db.session.commit()
             return "", 200
@@ -227,6 +229,7 @@ def user_profile(linkname):
             db.session.commit()
         else:
             flash("You cannot post here, you are not friends with " + user.name, category='error')
+        post_form.content.data = ""
     return render_template('profile.html', title='Profile', user=user, post_form=post_form, posts=posts)
 
 @app.errorhandler(404)
