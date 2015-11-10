@@ -128,6 +128,7 @@
         </div>
     </div>
 </div>
+<meta name="csrf-token" content="{{ csrf_token() }}">
 {% endblock content %}
 {% block footer %}
 {% if user.friends_requested.filter_by(requested_user_id=g.user.id).all()|length %}
@@ -135,51 +136,71 @@
 {% elif g.user.friends_requested.filter_by(requested_user_id=user.id).all()|length %}
 {% set req_id = g.user.friends_requested.filter_by(requested_user_id=user.id).one().id %}
 {% endif %}
-
 <script>
+var csrftoken = $('meta[name=csrf-token]').attr('content')
+$.ajaxSetup({
+    beforeSend: function(xhr, settings) {
+        if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+            xhr.setRequestHeader("X-CSRFToken", csrftoken)
+        }
+    }
+});
 $('[id$=_tabn]').click(function(){
         $(this).parents(".list-group").find(".active").removeClass("active");
         $(this).addClass("active");
 });
 $("[id^=del_post-]").click(function(){
     var $jt = $(this).closest(".jumbotron");
+    var id = this.id.split('-');
     $.ajax({
         url: '/api/posts',
         type: 'POST',
-        data: this.id,
+        dataType: 'text',
+        contentType: "application/json",
+        data: JSON.stringify({'action': id[0], 'id': id[1], 'csrf_token': csrftoken}),
         success: function (data, textStatus, xhr) {
             $jt.fadeOut(750, function(){
                 $jt.remove();
             });
+            location.reload();
         }
     });
 });
 $("#add_fr-{{user.id}}").click(function(){
+    var id = this.id.split('-');
     $.ajax({
         url: '/api/friends',
         type: 'POST',
-        data: this.id,
+        dataType: 'text',
+        contentType: "application/json",
+        data: JSON.stringify({'action': id[0], 'id': id[1], 'csrf_token': csrftoken}),
         success: function (data, textStatus, xhr) {
             location.reload();
         }
     });
 });
 $("#del_req-{{req_id}}, #del_reqd-{{req_id}}").click(function(){
+    var id = this.id.split('-');
     $.ajax({
         url: '/api/friends',
         type: 'POST',
-        data: this.id,
+        dataType: 'text',
+        contentType: "application/json",
+        data: JSON.stringify({'action': id[0], 'id': id[1], 'csrf_token': csrftoken}),
         success: function (data, textStatus, xhr) {
             location.reload();
         }
     });
 });
 $("#add_req-{{req_id}}").click(function(){
+    var id = this.id.split('-');
     var $btn = $('#pend');
     $.ajax({
         url: '/api/friends',
         type: 'POST',
-        data: this.id,
+        dataType: 'text',
+        contentType: "application/json",
+        data: JSON.stringify({'action': id[0], 'id': id[1], 'csrf_token': csrftoken}),
         success: function (data, textStatus, xhr) {
             $btn.fadeOut(500, function() {
                 $btn.replaceWith('<button class="btn btn-primary" type="button" data-toggle="modal" data-target="#post-modal"><i class="fa fa-plus"></i> Add post</button>');

@@ -11,6 +11,7 @@ BASE_ADMINS
 from flask.ext.admin import Admin
 from flask_admin.base import MenuLink
 from flask.ext.elasticsearch import FlaskElasticsearch
+from flask_wtf.csrf import CsrfProtect
 
 # Initialize the app and database, import the config
 app = Flask(__name__)
@@ -18,6 +19,7 @@ app.config.from_object('config')
 db = SQLAlchemy(app)
 es = FlaskElasticsearch()
 es.init_app(app)
+CsrfProtect(app)
 
 #setup Google oauth for login
 oauth = OAuth(app)
