@@ -1,5 +1,5 @@
 from flask.ext.wtf import Form
-from wtforms import PasswordField, StringField, SubmitField, BooleanField, DateField, widgets
+from wtforms import PasswordField, StringField, SubmitField, BooleanField, DateField, widgets, SelectField
 from wtforms.validators import DataRequired, Length, ValidationError
 from wtforms.fields import TextAreaField
 from app.crypto import compare, PassPolicy
@@ -80,3 +80,8 @@ class CKTextAreaField(TextAreaField):
 class PostForm(Form):
     content = CKTextAreaField('Content', validators=[DataRequired(), Length(max=10000)])
     submit = SubmitField("Submit")
+
+class SearchForm(Form):
+    query = StringField('Search for: ', validators=[DataRequired(), Length(max=200)])
+    search_type = SelectField("Search type", validators=[DataRequired()], choices=[("Users", "Users"), ("Posts", "Posts")])
+    submit = SubmitField("Search!")
