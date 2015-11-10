@@ -128,13 +128,6 @@ def friends_api():
 def index():
     return render_template("index.html", title="Home")
 
-@app.route('/testfriend')
-def testfriend():
-    user = User.query.filter_by(id=2).one()
-    req = Request(requesting_user_id=g.user.id, requested_user_id=user.id)
-    db.session.add(req)
-    db.session.commit()
-
 @app.route('/testesindex')
 def testesindex():
     user = User_ES(user_id=1, email='dad@dad.com', name='dad', linkname='dad', nickname='dad')
@@ -173,31 +166,6 @@ def testespost():
     for post in results:
         return post.content
 
-@app.route('/listreq')
-def listfriend():
-    print g.user.friends_requested.all()
-    print g.user.friend_requests.all()
-
-@app.route('/acceptfriend')
-def acceptfriend():
-    reqs = g.user.friend_requests.all()
-    for req in reqs:
-        g.user.friends.append(req.requesting_user)
-        req.requesting_user.friends.append(g.user)
-        db.session.delete(req)
-    db.session.add(g.user)
-    db.session.commit()
-    print g.user.friends.all()
-
-
-@app.route('/testpost')
-def testpost():
-    post = Post(content="Are you my dad?? More at 11.",
-                user_id=1,
-                poster_id=g.user.id)
-    db.session.add(post)
-    db.session.commit()
-
 @app.route('/profile')
 def profile():
     return redirect(url_for('user_profile', linkname=g.user.linkname))
@@ -205,10 +173,8 @@ def profile():
 @app.route('/api/posts', methods=['POST'])
 @login_required
 def posts_api():
-    print str(session.keys())
     try:
         data = json.loads(request.get_data())
-        print data['csrf_token']
         post = Post.query.filter_by(id=data['id']).one()
         if data['action'] == "del_post" and (g.user == post.poster or g.user == post.user):
             db.session.delete(post)

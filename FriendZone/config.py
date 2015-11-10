@@ -7,7 +7,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 f = open(os.path.join(basedir, 'app.vars') , 'r')
 
 CSRF_ENABLED = True
-#SERVER_NAME = 'rc3.club'
+WTF_CSRF_ENABLED = True
 
 #setup database
 SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'app.db') + '?check_same_thread=False'
