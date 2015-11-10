@@ -1,10 +1,11 @@
-from app import db
+from app import db, es
 from datetime import datetime
 from hashlib import md5
 from elasticsearch_dsl import DocType, String, Date, Integer
 from elasticsearch_dsl.connections import connections
+from elasticsearch import Elasticsearch, RequestsHttpConnection
 
-connections.create_connection(hosts=['localhost'])
+connections.add_connection('default', es)
 
 friends_table = db.Table('friends_table',
     db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
@@ -12,56 +13,13 @@ friends_table = db.Table('friends_table',
 )
 
 class User_ES(DocType):
-    id = Integer()
+    user_id = Integer(analyzer='snowball')
     name = String(analyzer='snowball', fields={'raw': String(index='not_analyzed')})
     nickname = String(analyzer='snowball')
     email = String(analyzer='snowball')
-    password = String(analyzer='snowball')
-    role = Integer()
-    bio = String(analyzer='snowball')
-    birthday = Date()
-    last_seen = Date()
-
-    email = String(analyzer='snowball')
-    email = String(analyzer='snowball')
-    published_from = Date()
-    lines = Integer()
-
-    class Meta:
-        index = 'blog'
 
     def save(self, ** kwargs):
-        self.lines = len(self.body.split())
-        return super(User, self).save(** kwargs)
-
-    def is_authenticated(self):
-        return True
-
-    def is_active(self):
-        return True
-
-    def is_anonymous(self):
-        return False
-
-    def get_id(self):
-        return unicode(self.id)
-
-    def is_admin(self):
-        if self.role == 1:
-            return True
-        return False
-
-    def bday_str(self):
-        return self.birthday.strftime('%B %-d, %Y')
-
-    def __repr__(self):
-        return '<User {}: {}>'.format(self.id, self.name)
-
-    def __str__(self):
-        return self.name
-
-    def last_seen_str(self):
-        return self.last_seen.strftime('%A, %B %d %Y %I:%M%p')
+        return super(User_ES, self).save(** kwargs)
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -154,18 +112,12 @@ class Post(db.Model):
         return 'Post: <{}>'.format(self.id)
 
 class Post_ES(DocType):
-    id = Integer()
+    post_id = Integer(analyzer='snowball')
+    user_id = Integer(analyzer='snowball')
+    poster_id = Integer(analyzer='snowball')
     content = String(analyzer='snowball')
     name = String(analyzer='snowball')
     timestamp = Date()
-    user_id = Integer()
-    poster_id = Integer()
 
-    def timestamp_str(self):
-        return self.timestamp.strftime('%A, %B %d, %Y %I:%M%p')
-
-    def __str__(self):
-        return self.content[:100]
-
-    def __repr__(self):
-        return 'Post: <{}>'.format(self.id)
+    def save(self, ** kwargs):
+        return super(User_ES, self).save(** kwargs)

@@ -1,4 +1,4 @@
-from app import db, lm, app
+from app import db, lm, app, es
 from flask import render_template, flash, redirect, session, url_for, g, abort, request
 from flask.ext.login import login_user, logout_user, current_user, login_required
 from app.models import *
@@ -54,6 +54,12 @@ def signup():
                     verified=True)
         db.session.add(user)
         db.session.commit()
+        user_es = User_ES(user_id=user.id, email=form.email.data,
+                    name=form.name.data,
+                    linkname=form.linkname.data,
+                    nickname=form.nickname.data
+                    );
+        user_es.save()
         flash("Registered successfully!", category='good')
         return redirect(url_for('login'))
     else:
@@ -121,6 +127,60 @@ def friends_api():
 @app.route('/index')
 def index():
     return render_template("index.html", title="Home")
+
+@app.route('/testfriend')
+def testfriend():
+    user = User.query.filter_by(id=2).one()
+    req = Request(requesting_user_id=g.user.id, requested_user_id=user.id)
+    db.session.add(req)
+    db.session.commit()
+
+@app.route('/testesindex')
+def testesindex():
+    user = User_ES(user_id=1, email='dad@dad.com', name='dad', linkname='dad', nickname='dad')
+    user.save()
+    s = User_ES.search();
+    s = s.query('match', user_id=1)
+    results = s.execute()
+    for user in results:
+        return user.email
+
+@app.route('/testes_search')
+def testes_search():
+    s = User_ES.search();
+    s = s.query('match', user_id=1)
+    results = s.execute()
+    last = ''
+    for user in results:
+        last = user.email
+        print user.email
+    return last
+
+
+@app.route('/testesfriend')
+def testesfriend():
+    s = User_ES.search()
+    s = s.filter('term').query('match', id = 1)
+    results = s.execute()
+    for user in results:
+        return user.name
+
+@app.route('/listreq')
+def listfriend():
+    print g.user.friends_requested.all()
+    print g.user.friend_requests.all()
+
+@app.route('/acceptfriend')
+def acceptfriend():
+    reqs = g.user.friend_requests.all()
+    for req in reqs:
+        g.user.friends.append(req.requesting_user)
+        req.requesting_user.friends.append(g.user)
+        db.session.delete(req)
+    db.session.add(g.user)
+    db.session.commit()
+    print g.user.friends.all()
+
 
 @app.route('/testpost')
 def testpost():
