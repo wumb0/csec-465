@@ -35,6 +35,7 @@
                     {% if g.user.is_authenticated %}
                     <li id="profile"><a href="{{url_for('profile')}}"><i class="fa fa-user"></i> Profile</a></li>
                     <li id="friends"><a href="{{url_for('friends')}}"><i class="fa fa-users"></i> Friends</a></li>
+                    <li id="search"><a href="{{url_for('search')}}"><i class="fa fa-search"></i> Search</a></li>
                     {% if g.user.is_admin() %}
                     <li id="admin"><a href="{{url_for('admin.index')}}"><i class="fa fa-gear"></i> Admin</a></li>
                     {% endif %}

@@ -49,6 +49,10 @@ class SignupForm(LoginForm):
         if len(User.query.filter_by(email=field.data).all()):
             raise ValidationError("That email address is already in use")
 
+    def validate_birthday(self, field):
+        if field.data.year < 1990:
+            raise ValidationError("Year must be => 1990")
+
 class CKTextAreaWidget(widgets.TextArea):
     '''Fancy text editor widget
     Parent: wtforms.widgets.TextArea

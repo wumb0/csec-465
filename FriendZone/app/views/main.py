@@ -212,6 +212,10 @@ def user_profile(linkname):
         post_form.content.data = ""
     return render_template('profile.html', title='Profile', user=user, post_form=post_form, posts=posts)
 
+@app.route('/search')
+def search():
+    return render_template('search.html', title="Search")
+
 @app.errorhandler(404)
 def not_found_error(error):
     '''The error handler for invalid pages
