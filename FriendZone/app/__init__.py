@@ -6,8 +6,7 @@ from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.login import LoginManager
 from flask_oauthlib.client import OAuth
-from config import basedir, GOOGLE_CONSUMER_KEY, GOOGLE_CONSUMER_SECRET, \
-BASE_ADMINS
+from config import basedir
 from flask.ext.admin import Admin
 from flask_admin.base import MenuLink
 from flask.ext.elasticsearch import FlaskElasticsearch
