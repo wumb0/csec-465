@@ -1,9 +1,10 @@
-from app import db
+from app import db, es
 from datetime import datetime
 from elasticsearch_dsl import DocType, String, Date, Integer
 from elasticsearch_dsl.connections import connections
+from elasticsearch import Elasticsearch, RequestsHttpConnection
 
-connections.create_connection(hosts=['localhost'])
+connections.add_connection('default', es)
 
 friends_table = db.Table('friends_table',
     db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
@@ -11,18 +12,16 @@ friends_table = db.Table('friends_table',
 )
 
 class User_ES(DocType):
-    id = Integer()
+    user_id = Integer(analyzer='snowball')
     name = String(analyzer='snowball', fields={'raw': String(index='not_analyzed')})
     nickname = String(analyzer='snowball')
     email = String(analyzer='snowball')
-    lines = Integer()
 
     class Meta:
-        index = 'blog'
+        index = 'users'
 
     def save(self, ** kwargs):
-        self.lines = len(self.body.split())
-        return super(User, self).save(** kwargs)
+        return super(User_ES, self).save(** kwargs)
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
