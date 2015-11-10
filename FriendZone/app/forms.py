@@ -1,5 +1,5 @@
 from flask.ext.wtf import Form
-from wtforms import PasswordField, StringField, SubmitField, BooleanField, DateField
+from wtforms import PasswordField, StringField, SubmitField, BooleanField, DateField, widgets
 from wtforms.validators import DataRequired, Length, ValidationError
 from wtforms.fields import TextAreaField
 from app.crypto import compare, PassPolicy
@@ -48,3 +48,32 @@ class SignupForm(LoginForm):
     def validate_email(self, field):
         if len(User.query.filter_by(email=field.data).all()):
             raise ValidationError("That email address is already in use")
+
+class CKTextAreaWidget(widgets.TextArea):
+    '''Fancy text editor widget
+    Parent: wtforms.widgets.TextArea
+    '''
+    def __call__(self, field, **kwargs):
+        '''Make the class of the widget ckeditor so the input box is replaced
+        with CKEditor
+        Returns: the result of the parent __call__ function
+        '''
+        if kwargs.get('class'):
+            kwargs['class'] += " ckeditor"
+        else:
+            kwargs.setdefault('class_', 'ckeditor')
+        return super(CKTextAreaWidget, self).__call__(field, **kwargs)
+
+
+class CKTextAreaField(TextAreaField):
+    '''Fancy text editor field
+    Parent: wtforms.fields.TextAreaField
+    Attribute:
+        widget - the CKTextAreaWidget to use for this text area
+    '''
+    widget = CKTextAreaWidget()
+
+class PostForm(Form):
+    content = CKTextAreaField('Content', validators=[DataRequired(), Length(max=10000)])
+    submit = SubmitField("Submit")
+

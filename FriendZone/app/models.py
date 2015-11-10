@@ -114,6 +114,11 @@ class User(db.Model):
     def last_seen_str(self):
         return self.last_seen.strftime('%A, %B %d, %Y %I:%M%p')
 
+    def __eq__(self, other):
+        if self.id == other.id:
+            return True
+        return False
+
     def avatar(self, size):
         '''Generates the gravatar URL for the user
         arg:
@@ -157,7 +162,7 @@ class Post_ES(DocType):
     poster_id = Integer()
 
     def timestamp_str(self):
-        return self.timestamp.strftime('%A, %B %d %Y %I:%M%p')
+        return self.timestamp.strftime('%A, %B %d, %Y %I:%M%p')
 
     def __str__(self):
         return self.content[:100]

@@ -5,6 +5,7 @@ from app.models import *
 from app.crypto import get_hashstr
 from app.forms import *
 from datetime import datetime
+from sqlalchemy import desc
 
 
 @app.before_request
@@ -72,9 +73,9 @@ def logout():
 def friends():
     return render_template("friends.html", title="Friends")
 
-@app.route('/api/friends', methods=["POST", "GET"])
+@app.route('/api/friends', methods=["POST"])
 @login_required
-def api_requests():
+def friends_api():
     '''
     Case1: user accepts request. delete request and add friends
     Case2: user deletes request. delete request only.
@@ -87,10 +88,15 @@ def api_requests():
         req = Request.query.filter_by(id=id).one()
     except:
         try:
+            user = User.query.filter_by(id=id).one()
             if key == "del_fr":
-                user = User.query.filter_by(id=id).one()
                 g.user.friends.remove(user)
                 user.friends.remove(g.user)
+                db.session.commit()
+                return "", 200
+            elif key == "add_fr" and user not in g.user.friends:
+                req = Request(requesting_user_id=g.user.id, requested_user_id=user.id)
+                db.session.add(req)
                 db.session.commit()
                 return "", 200
         except:
@@ -116,30 +122,6 @@ def api_requests():
 def index():
     return render_template("index.html", title="Home")
 
-@app.route('/testfriend')
-def testfriend():
-    user = User.query.filter_by(id=2).one()
-    req = Request(requesting_user_id=g.user.id, requested_user_id=user.id)
-    db.session.add(req)
-    db.session.commit()
-
-@app.route('/listreq')
-def listfriend():
-    print g.user.friends_requested.all()
-    print g.user.friend_requests.all()
-
-@app.route('/acceptfriend')
-def acceptfriend():
-    reqs = g.user.friend_requests.all()
-    for req in reqs:
-        g.user.friends.append(req.requesting_user)
-        req.requesting_user.friends.append(g.user)
-        db.session.delete(req)
-    db.session.add(g.user)
-    db.session.commit()
-    print g.user.friends.all()
-
-
 @app.route('/testpost')
 def testpost():
     post = Post(content="Are you my dad?? More at 11.",
@@ -150,16 +132,39 @@ def testpost():
 
 @app.route('/profile')
 def profile():
-    return render_template('profile.html', title='Profile', user=g.user)
+    return redirect(url_for('user_profile', linkname=g.user.linkname))
 
-@app.route('/<linkname>/profile')
+@app.route('/api/posts', methods=['POST'])
+@login_required
+def posts_api():
+    try:
+        key, id = request.get_data().split("-")
+        post = Post.query.filter_by(id=id).one()
+        if key == "del_post" and (g.user == post.poster or g.user == post.user):
+            db.session.delete(post)
+            db.session.commit()
+            return "", 200
+    except:
+        pass
+    return "", 400
+
+@app.route('/<linkname>/profile', methods=['POST', 'GET'])
 @login_required
 def user_profile(linkname):
     try:
         user = User.query.filter_by(linkname=linkname).one()
     except:
         abort(404)
-    return render_template('profile.html', title='Profile', user=user)
+    posts = Post.query.filter_by(user_id=user.id).order_by(desc(Post.timestamp))
+    post_form = PostForm()
+    if post_form.validate_on_submit():
+        post = Post(content=post_form.content.data,
+                    timestamp=datetime.now(),
+                    user_id=user.id,
+                    poster_id=g.user.id)
+        db.session.add(post)
+        db.session.commit()
+    return render_template('profile.html', title='Profile', user=user, post_form=post_form, posts=posts)
 
 @app.errorhandler(404)
 def not_found_error(error):
