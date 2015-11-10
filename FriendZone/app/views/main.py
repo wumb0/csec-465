@@ -161,7 +161,7 @@ def testesfriend():
 @app.route('/testespost')
 def testespost():
     s = Post_ES.search()
-    s = s.query('match', post_id = 4)
+    s = s.query('match', content = 'dad')
     results = s.execute()
     for post in results:
         return post.content
@@ -177,6 +177,11 @@ def posts_api():
         data = json.loads(request.get_data())
         post = Post.query.filter_by(id=data['id']).one()
         if data['action'] == "del_post" and (g.user == post.poster or g.user == post.user):
+            s = Post_ES.search()
+            s = s.query('match', post_id=post.id)
+            results = s.execute()
+            for es_post in results:
+                es_post.delete()
             db.session.delete(post)
             db.session.commit()
             return "", 200
