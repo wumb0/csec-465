@@ -17,9 +17,6 @@ class User_ES(DocType):
     nickname = String(analyzer='snowball')
     email = String(analyzer='snowball')
 
-    class Meta:
-        index = 'users'
-
     def save(self, ** kwargs):
         return super(User_ES, self).save(** kwargs)
 
@@ -101,18 +98,12 @@ class Post(db.Model):
         return 'Post: <{}>'.format(self.id)
 
 class Post_ES(DocType):
-    id = Integer()
+    id = Integer(analyzer='snowball')
     content = String(analyzer='snowball')
     name = String(analyzer='snowball')
     timestamp = Date()
-    user_id = Integer()
-    poster_id = Integer()
+    user_id = Integer(analyzer='snowball')
+    poster_id = Integer(analyzer='snowball')
 
-    def timestamp_str(self):
-        return self.timestamp.strftime('%A, %B %d %Y %I:%M%p')
-
-    def __str__(self):
-        return self.content[:100]
-
-    def __repr__(self):
-        return 'Post: <{}>'.format(self.id)
+    def save(self, ** kwargs):
+        return super(User_ES, self).save(** kwargs)
