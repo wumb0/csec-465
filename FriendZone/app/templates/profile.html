@@ -13,74 +13,118 @@
         </div>
     </div>
     <div class="col-md-7 top-pad">
-        <div class="modal fade" id="post-modal" tabindex="-1" role="dialog" aria-labelledby="modal1">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title">Compose Post</h4>
+        <div class="tab-content">
+            <div class="tab-pane fade in active" id="posts">
+                <div class="modal fade" id="post-modal" tabindex="-1" role="dialog" aria-labelledby="modal1">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title">Compose Post</h4>
+                            </div>
+                            <form action="" method="POST">
+                                {{post_form.hidden_tag()}}
+                                <div class="modal-body">
+                                    {{post_form.content}}
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                    {{post_form.submit(class_="btn btn-primary")}}
+                                </div>
+                            </form>
+                        </div>
                     </div>
-                    <form action="" method="POST">
-                        {{post_form.hidden_tag()}}
-                        <div class="modal-body">
-                            {{post_form.content}}
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                            {{post_form.submit(class_="btn btn-primary")}}
-                        </div>
-                    </form>
                 </div>
+                <div class="row">
+                {% if g.user in user.friends or g.user == user %}
+                    <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#post-modal"><i class="fa fa-plus"></i> Add post</button>
+                {% elif user.friends_requested.filter_by(requested_user_id=g.user.id).all()|length%}
+                <span id="pend">
+                    {% set req_id = user.friends_requested.filter_by(requested_user_id=g.user.id).one().id %}
+                    <button class="btn btn-success" type="button" id="add_req-{{req_id}}"><i class="fa fa-check"></i> Accept Friend Request</button>
+                    <button class="btn btn-danger" type="button" id="del_req-{{req_id}}"><i class="fa fa-times"></i> Delete Friend Request</button>
+                </span>
+                {% elif g.user.friends_requested.filter_by(requested_user_id=user.id).all()|length %}
+                <span id="pend">
+                    {% set req_id = g.user.friends_requested.filter_by(requested_user_id=user.id).one().id %}
+                    <button class="btn btn-primary" type="button"><i class="fa fa-clock-o"></i> Pending Friend Request</button>
+                    <button class="btn btn-danger" type="button" id="del_reqd-{{req_id}}"><i class="fa fa-times"></i> Delete Pending Friend Request</button>
+                </span>
+                {% else %}
+                    <button class="btn btn-success" type="button" id="add_fr-{{user.id}}"><i class="fa fa-plus"></i> Add friend!</button>
+                {% endif %}
+                </div>
+                {% for post in posts %}
+                <div class="row field-sep">
+                    <div class="jumbotron">
+                        <div class="row">
+                            <img src="{{post.poster.avatar(40)}}">
+                        {% if g.user.id == user.id or g.user.id == post.poster_id %}
+                            <button type="button" class="close" id="del_post-{{post.id}}" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        {% endif %}
+                        </div>
+                        <div class="row">
+                            <a href="{{url_for('user_profile', linkname=post.poster.linkname)}}">{{post.poster}}</a>
+                        </div>
+                        <div class="row">
+                            {{post.timestamp_str()}}
+                        </div>
+                        <div class="row">
+                            {{post.content|safe}}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
             </div>
-        </div>
-        <div class="row">
-        {% if g.user in user.friends or g.user == user %}
-            <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#post-modal"><i class="fa fa-plus"></i> Add post</button>
-        {% elif user.friends_requested.filter_by(requested_user_id=g.user.id).all()|length%}
-        <span id="pend">
-            {% set req_id = user.friends_requested.filter_by(requested_user_id=g.user.id).one().id %}
-            <button class="btn btn-success" type="button" id="add_req-{{req_id}}"><i class="fa fa-check"></i> Accept Friend Request</button>
-            <button class="btn btn-danger" type="button" id="del_req-{{req_id}}"><i class="fa fa-times"></i> Delete Friend Request</button>
-        </span>
-        {% elif g.user.friends_requested.filter_by(requested_user_id=user.id).all()|length %}
-        <span id="pend">
-            {% set req_id = g.user.friends_requested.filter_by(requested_user_id=user.id).one().id %}
-            <button class="btn btn-primary" type="button"><i class="fa fa-clock-o"></i> Pending Friend Request</button>
-            <button class="btn btn-danger" type="button" id="del_reqd-{{user.id}}"><i class="fa fa-times"></i> Delete Pending Friend Request</button>
-        </span>
-        {% else %}
-            <button class="btn btn-success" type="button" id="add_fr-{{user.id}}"><i class="fa fa-plus"></i> Add friend!</button>
-        {% endif %}
-        </div>
-        {% for post in posts %}
-        <div class="row field-sep">
-            <div class="jumbotron">
-                <div class="row">
-                    <img src="{{post.poster.avatar(40)}}">
-                </div>
-                <div class="row">
-                    <a href="{{url_for('user_profile', linkname=post.poster.linkname)}}">{{post.poster}}</a>
-                </div>
-                <div class="row">
-                    {{post.timestamp_str()}}
-                </div>
-                <div class="row">
-                    {{post.content|safe}}
-                </div>
-                {% if g.user.id == user.id or g.user.id == post.poster_id %}
-                    <div class="row">
-                        <button class="btn btn-danger" id="del_post-{{post.id}}"><i class="fa fa-times"></i> Delete</button>
-                    </div>
+            <div class="tab-pane fade in" id="about">
+                <h1>About</h1>
+                {% if g.user in user.friends or g.user == user%}
+                    <h1>Nickname</h1>
+                    <p>{{user.nickname}}</p>
+                    <h1>Bio</h1>
+                    <p>{{user.bio|safe}}</p>
+                    <h1>Email</h1>
+                    <p>{{user.email}}</p>
+                    <h1>Birthday</h1>
+                    <p>{{user.bday_str()}}</p>
+                    <h1>Last seen</h1>
+                    <p>{{user.last_seen_str()}}</p>
+                {% else %}
+                    <h1>You are not friends with {{user.name}}. Become their friend to view their full profile</h1>
+                {% endif %}
+            </div>
+            <div class="tab-pane fade in" id="friends_item">
+                <h1>Friends</h1>
+                {% if g.user in user.friends or g.user == user%}
+                    <table class="table table-hover table-striped table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for friend in user.friends %}
+                            <tr>
+                                <td><a href="{{url_for('user_profile', linkname=friend.linkname)}}">{{friend.name}}</a></td>
+                                <td>{{friend.email}}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <h1>You are not friends with {{user.name}}. Become their friend to view their full profile</h1>
                 {% endif %}
             </div>
         </div>
-        {% endfor %}
     </div>
     <div class="col-md-2">
         <div class="list-group top-pad">
-            <a class="list-group-item active" href="#posts">Posts</a>
-            <a class="list-group-item" href="#about">About</a>
-            <a class="list-group-item" href="#friends_item">Friends</a>
+            <a class="list-group-item active" data-toggle="tab" href="#posts" id="post_tabn">Posts</a>
+            <a class="list-group-item" data-toggle="tab" href="#about" id="about_tabn">About</a>
+            <a class="list-group-item" data-toggle="tab" href="#friends_item" id="friends_tabn">Friends</a>
         </div>
     </div>
 </div>
@@ -93,6 +137,10 @@
 {% endif %}
 
 <script>
+$('[id$=_tabn]').click(function(){
+        $(this).parents(".list-group").find(".active").removeClass("active");
+        $(this).addClass("active");
+});
 $("[id^=del_post-]").click(function(){
     var $jt = $(this).closest(".jumbotron");
     $.ajax({

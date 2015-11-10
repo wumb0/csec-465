@@ -53,4 +53,5 @@ _admin = Admin(app, 'FriendZone Admin', template_mode='bootstrap3',
               index_view=admin.ProtectedIndexView())
 _admin.add_link(MenuLink(name='Back to Site', url='/'))
 _admin.add_view(admin.PostModelView(models.Post, db.session))
+_admin.add_view(admin.UserModelView(models.User, db.session))
 _admin.add_view(admin.ProtectedFileAdmin(os.path.join(basedir, 'app/static/uploads'), '/static/uploads/', name="Uploads"))

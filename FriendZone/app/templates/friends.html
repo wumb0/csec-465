@@ -21,7 +21,7 @@
                 <tbody>
                 {% for friend in g.user.friends %}
                     <tr>
-                        <td><a href="{{url_for('user_profile', linkname=friend.linkname)}}">{{friend.name}}</a></td>
+                        <td><img src="{{friend.avatar(20)}}"><a href="{{url_for('user_profile', linkname=friend.linkname)}}">{{friend.name}}</a></td>
                         <td>{{friend.email}}</td>
                         <td>{{friend.bday_str()}}</td>
                         <td>{{friend.last_seen_str()}}</td>
@@ -45,7 +45,7 @@
                 <tbody>
                 {% for req in g.user.friend_requests %}
                     <tr>
-                        <td>{{req.requesting_user.name}}</td>
+                        <td><a href={{url_for('user_profile', linkname=req.requesting_user.linkname)}}>{{req.requesting_user.name}}</a></td>
                         <td>{{req.requesting_user.email}}</td>
                         <td>
                             <div class="row">
@@ -76,7 +76,7 @@
                 <tbody>
                 {% for req in g.user.friends_requested %}
                     <tr>
-                        <td>{{req.requested_user.name}}</td>
+                        <td><a href={{url_for('user_profile', linkname=req.requested_user.linkname)}}>{{req.requested_user.name}}</a></td>
                         <td>{{req.requested_user.email}}</td>
                         <td><button id="del_reqd-{{req.id}}" class="btn btn-danger">Delete</button></td>
                     </tr>

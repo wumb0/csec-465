@@ -15,7 +15,7 @@ class ProtectedBaseView(BaseView):
     def _handle_view(self, name, **kwargs):
         if not self.is_accessible():
             flash("You don't have permission to go there")
-            return redirect(url_for('main.index'))
+            return redirect(url_for('index'))
 
 class ProtectedModelView(ModelView, ProtectedBaseView):
     pass
@@ -24,6 +24,11 @@ class ProtectedIndexView(AdminIndexView, ProtectedBaseView):
     pass
 
 class ProtectedFileAdmin(FileAdmin, ProtectedBaseView):
+    pass
+
+class UserModelView(ProtectedModelView):
+    column_exclude_list = ['password', 'bio']
+    form_excluded_columns = ['password', 'posts', 'authored', 'friend_requests', 'friends_requested']
     pass
 
 class PostModelView(ProtectedModelView):

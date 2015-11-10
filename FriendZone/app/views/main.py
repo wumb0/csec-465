@@ -158,12 +158,15 @@ def user_profile(linkname):
     posts = Post.query.filter_by(user_id=user.id).order_by(desc(Post.timestamp))
     post_form = PostForm()
     if post_form.validate_on_submit():
-        post = Post(content=post_form.content.data,
-                    timestamp=datetime.now(),
-                    user_id=user.id,
-                    poster_id=g.user.id)
-        db.session.add(post)
-        db.session.commit()
+        if g.user in user.friends or g.user == user:
+            post = Post(content=post_form.content.data,
+                        timestamp=datetime.now(),
+                        user_id=user.id,
+                        poster_id=g.user.id)
+            db.session.add(post)
+            db.session.commit()
+        else:
+            flash("You cannot post here, you are not friends with " + user.name, category='error')
     return render_template('profile.html', title='Profile', user=user, post_form=post_form, posts=posts)
 
 @app.errorhandler(404)

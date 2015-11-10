@@ -76,4 +76,3 @@ class CKTextAreaField(TextAreaField):
 class PostForm(Form):
     content = CKTextAreaField('Content', validators=[DataRequired(), Length(max=10000)])
     submit = SubmitField("Submit")
-
