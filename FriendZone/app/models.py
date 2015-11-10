@@ -10,24 +10,8 @@ friends_table = db.Table('friends_table',
     db.Column('friend_id', db.Integer, db.ForeignKey('user.id')),
 )
 
-class Article(DocType):
-    title = String(analyzer='snowball', fields={'raw': String(index='not_analyzed')})
-    body = String(analyzer='snowball')
-    tags = String(index='not_analyzed')
-    published_from = Date()
-    lines = Integer()
-
-    class Meta:
-        index = 'blog'
-
-    def save(self, ** kwargs):
-        self.lines = len(self.body.split())
-        return super(Article, self).save(** kwargs)
-
-    def is_published(self):
-        return datetime.now() < self.published_from
-
 class User_ES(DocType):
+    id = Integer()
     name = String(analyzer='snowball', fields={'raw': String(index='not_analyzed')})
     nickname = String(analyzer='snowball')
     email = String(analyzer='snowball')
@@ -158,3 +142,19 @@ class Post(db.Model):
     def __repr__(self):
         return 'Post: <{}>'.format(self.id)
 
+class Post_ES(DocType):
+    id = Integer()
+    content = String(analyzer='snowball')
+    name = String(analyzer='snowball')
+    timestamp = Date()
+    user_id = Integer()
+    poster_id = Integer()
+
+    def timestamp_str(self):
+        return self.timestamp.strftime('%A, %B %d %Y %I:%M%p')
+
+    def __str__(self):
+        return self.content[:100]
+
+    def __repr__(self):
+        return 'Post: <{}>'.format(self.id)
