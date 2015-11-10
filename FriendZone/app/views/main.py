@@ -128,27 +128,6 @@ def friends_api():
 def index():
     return render_template("index.html", title="Home")
 
-@app.route('/testesindex')
-def testesindex():
-    user = User_ES(user_id=1, email='dad@dad.com', name='dad', linkname='dad', nickname='dad')
-    user.save()
-    s = User_ES.search();
-    s = s.query('match', user_id=1)
-    results = s.execute()
-    for user in results:
-        return user.email
-
-@app.route('/testes_search')
-def testes_search():
-    s = User_ES.search();
-    s = s.query('match', user_id=1)
-    results = s.execute()
-    last = ''
-    for user in results:
-        last = user.email
-        print user.email
-    return last
-
 @app.route('/profile')
 def profile():
     return redirect(url_for('user_profile', linkname=g.user.linkname))
@@ -191,7 +170,10 @@ def user_profile(linkname):
             db.session.commit()
             post_es = Post_ES(post_id = post.id,
                             user_id = user.id,
+                            user_linkname = user.linkname,
+                            user_name = user.name,
                             poster_id = g.user.id,
+                            poster_linkname = user.linkname,
                             content = post_form.content.data,
                             name = post.timestamp)
             post_es.save()

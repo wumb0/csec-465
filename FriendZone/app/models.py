@@ -16,6 +16,7 @@ class User_ES(DocType):
     user_id = Integer(analyzer='snowball')
     name = String(analyzer='snowball', fields={'raw': String(index='not_analyzed')})
     nickname = String(analyzer='snowball')
+    linkname = String(analyzer='snowball')
     email = String(analyzer='snowball')
 
     class Meta:
@@ -120,7 +121,10 @@ class Post(db.Model):
 class Post_ES(DocType):
     post_id = Integer(analyzer='snowball')
     user_id = Integer(analyzer='snowball')
+    user_linkname = String(analyzer='snowball')
+    user_name = String(analyzer='snowball')
     poster_id = Integer(analyzer='snowball')
+    poster_linkname = String(analyzer='snowball')
     content = String(analyzer='snowball')
     timestamp = Date()
     class Meta:

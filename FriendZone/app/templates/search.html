@@ -15,7 +15,7 @@
 <div class="row field-sep">
     <div class="jumbotron">
         <div class="row">
-            {{user.name}}
+            <a href={{url_for('user_profile', linkname=user.linkname)}}>{{user.name}}</a></td>
         </div>
         <div class="row">
             <em>"{{user.nickname}}"</em>
@@ -29,6 +29,7 @@
 <div class="row field-sep">
     <div class="jumbotron">
         <div class="row">
+            <a href={{url_for('user_profile', linkname=post.user_linkname)}}>{{post.user_name}}</a></td>
             {{post.content|safe}}
         </div>
     </div>
