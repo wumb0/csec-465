@@ -50,7 +50,7 @@ class SignupForm(LoginForm):
             raise ValidationError("That email address is already in use")
 
     def validate_birthday(self, field):
-        if field.data.year < 1990:
+        if field.data.year < 1900:
             raise ValidationError("Year must be => 1990")
 
 class CKTextAreaWidget(widgets.TextArea):
