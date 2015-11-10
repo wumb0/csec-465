@@ -53,7 +53,7 @@ def signup():
                     verified=True)
         db.session.add(user)
         db.session.commit()
-        user_es = User_ES(id=user.id, email=form.email.data,
+        user_es = User_ES(user_id=user.id, email=form.email.data,
                     name=form.name.data,
                     linkname=form.linkname.data,
                     nickname=form.nickname.data
@@ -115,8 +115,12 @@ def testes_search():
     s = User_ES.search();
     s = s.query('match', user_id=1)
     results = s.execute()
+    last = ''
     for user in results:
-        return user.email
+        last = user.email
+        print user.email
+    return last
+
 
 @app.route('/testesfriend')
 def testesfriend():
