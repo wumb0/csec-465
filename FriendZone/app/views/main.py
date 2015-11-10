@@ -203,6 +203,7 @@ def user_profile(linkname):
 @app.route('/search', methods=['GET', 'POST'])
 def search():
     form = SearchForm()
+    results = []
     if form.validate_on_submit():
         if form.search_type.data == "Posts":
             s = Post_ES.search()
