@@ -24,6 +24,9 @@ class User_ES(DocType):
     def save(self, ** kwargs):
         return super(User_ES, self).save(** kwargs)
 
+    def delete(self, ** kwargs):
+        return super(User_ES, self).delete(** kwargs)
+
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), index=True)
@@ -124,3 +127,5 @@ class Post_ES(DocType):
         index = 'default'
     def save(self, ** kwargs):
         return super(Post_ES, self).save(** kwargs)
+    def delete(self, ** kwargs):
+        return super(Post_ES, self).delete(** kwargs)
