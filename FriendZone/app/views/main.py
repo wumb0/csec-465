@@ -1,4 +1,4 @@
-from app import db, lm, app
+from app import db, lm, app, es
 from flask import render_template, flash, redirect, session, url_for, g, abort
 from flask.ext.login import login_user, logout_user, current_user, login_required
 from app.models import *
@@ -53,6 +53,12 @@ def signup():
                     verified=True)
         db.session.add(user)
         db.session.commit()
+        user_es = User_ES(id=user.id, email=form.email.data,
+                    name=form.name.data,
+                    linkname=form.linkname.data,
+                    nickname=form.nickname.data
+                    );
+        user_es.save()
         flash("Registered successfully!", category='good')
         return redirect(url_for('login'))
     else:
@@ -93,6 +99,32 @@ def testfriend():
     req = Request(requesting_user_id=g.user.id, requested_user_id=user.id)
     db.session.add(req)
     db.session.commit()
+
+@app.route('/testesindex')
+def testesindex():
+    user = User_ES(user_id=1, email='dad@dad.com', name='dad', linkname='dad', nickname='dad')
+    user.save()
+    s = User_ES.search();
+    s = s.query('match', user_id=1)
+    results = s.execute()
+    for user in results:
+        return user.email
+
+@app.route('/testes_search')
+def testes_search():
+    s = User_ES.search();
+    s = s.query('match', user_id=1)
+    results = s.execute()
+    for user in results:
+        return user.email
+
+@app.route('/testesfriend')
+def testesfriend():
+    s = User_ES.search()
+    s = s.filter('term').query('match', id = 1)
+    results = s.execute()
+    for user in results:
+        return user.name
 
 @app.route('/listreq')
 def listfriend():
