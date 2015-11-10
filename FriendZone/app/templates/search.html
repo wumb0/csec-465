@@ -1,6 +1,38 @@
 {% extends "base.html" %}
 {% block content %}
-{% for r in results %}
-hello
+<div class="row">
+    <div class="col-md-12">
+        <form action="" method="POST">
+            {{form.hidden_tag()}}
+            {{form.query.label}} {{form.query}}
+            {{form.search_type.label}} {{form.search_type}}
+            {{form.submit(class_="btn btn-primary")}}
+        </form>
+    </div>
+</div>
+{% if results_type == "Users" %}
+{% for user in results %}
+<div class="row field-sep">
+    <div class="jumbotron">
+        <div class="row">
+            {{user.name}}
+        </div>
+        <div class="row">
+            <em>"{{user.nickname}}"</em>
+        </div>
+    </div>
+</div>
 {% endfor %}
+{% endif %}
+{% if results_type == "Posts" %}
+{% for post in results %}
+<div class="row field-sep">
+    <div class="jumbotron">
+        <div class="row">
+            {{post.content|safe}}
+        </div>
+    </div>
+</div>
+{% endfor %}
+{% endif %}
 {% endblock content %}

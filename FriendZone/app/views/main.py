@@ -149,23 +149,6 @@ def testes_search():
         print user.email
     return last
 
-
-@app.route('/testesfriend')
-def testesfriend():
-    s = User_ES.search()
-    s = s.query('match', id = 1)
-    results = s.execute()
-    for user in results:
-        return user.name
-
-@app.route('/testespost')
-def testespost():
-    s = Post_ES.search()
-    s = s.query('match', content = 'dad')
-    results = s.execute()
-    for post in results:
-        return post.content
-
 @app.route('/profile')
 def profile():
     return redirect(url_for('user_profile', linkname=g.user.linkname))
@@ -217,9 +200,22 @@ def user_profile(linkname):
         post_form.content.data = ""
     return render_template('profile.html', title='Profile', user=user, post_form=post_form, posts=posts)
 
-@app.route('/search')
+@app.route('/search', methods=['GET', 'POST'])
 def search():
-    return render_template('search.html', title="Search")
+    form = SearchForm()
+    results = []
+    if form.validate_on_submit():
+        if form.search_type.data == "Posts":
+            s = Post_ES.search()
+            s = s.query('match', content = form.query.data)
+            results = s.execute()
+        elif form.search_type.data == "Users":
+            s = User_ES.search()
+            s = s.query('match', name=form.query.data)
+            results = s.execute()
+        else:
+            abort(400)
+    return render_template('search.html', title="Search", form=form, results=results, results_type=form.search_type.data)
 
 @app.errorhandler(404)
 def not_found_error(error):
