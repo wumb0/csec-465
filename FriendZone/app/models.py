@@ -15,15 +15,6 @@ class User_ES(DocType):
     name = String(analyzer='snowball', fields={'raw': String(index='not_analyzed')})
     nickname = String(analyzer='snowball')
     email = String(analyzer='snowball')
-    password = String(analyzer='snowball')
-    role = Integer()
-    bio = String(analyzer='snowball')
-    birthday = Date()
-    last_seen = Date()
-
-    email = String(analyzer='snowball')
-    email = String(analyzer='snowball')
-    published_from = Date()
     lines = Integer()
 
     class Meta:
@@ -32,35 +23,6 @@ class User_ES(DocType):
     def save(self, ** kwargs):
         self.lines = len(self.body.split())
         return super(User, self).save(** kwargs)
-
-    def is_authenticated(self):
-        return True
-
-    def is_active(self):
-        return True
-
-    def is_anonymous(self):
-        return False
-
-    def get_id(self):
-        return unicode(self.id)
-
-    def is_admin(self):
-        if self.role == 1:
-            return True
-        return False
-
-    def bday_str(self):
-        return self.birthday.strftime('%B %-d, %Y')
-
-    def __repr__(self):
-        return '<User {}: {}>'.format(self.id, self.name)
-
-    def __str__(self):
-        return self.name
-
-    def last_seen_str(self):
-        return self.last_seen.strftime('%A, %B %d %Y %I:%M%p')
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
