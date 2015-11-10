@@ -19,8 +19,8 @@ class User(db.Model):
     birthday = db.Column(db.Date)
     last_seen = db.Column(db.DateTime, default=datetime.now())
     verified = db.Column(db.Boolean, default=0)
-    friends_requested = db.relationship('Request', lazy='dynamic', primaryjoin="User.id==Request.requesting_user_id")
-    friend_requests = db.relationship('Request', lazy='dynamic', primaryjoin="User.id==Request.requested_user_id")
+    friends_requested = db.relationship('Request', lazy='dynamic', backref='requesting_user', foreign_keys='Request.requesting_user_id')
+    friend_requests = db.relationship('Request', lazy='dynamic', backref='requested_user', foreign_keys='Request.requested_user_id')
     posts = db.relationship('Post', lazy='dynamic', primaryjoin="User.id==Post.user_id")
     authored = db.relationship('Post', lazy='dynamic', primaryjoin="User.id==Post.poster_id")
     friends = db.relationship('User',
@@ -62,8 +62,6 @@ class Request(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     requesting_user_id = db.Column(db.Integer, db.ForeignKey(User.id), nullable=False)
     requested_user_id = db.Column(db.Integer, db.ForeignKey(User.id), nullable=False)
-    requesting_user = db.relationship('User', foreign_keys=requesting_user_id)
-    requested_user = db.relationship('User', foreign_keys=requested_user_id)
 
     def __str__(self):
         return '<Request {} -> {}>'.format(self.requesting_user, self.requested_user)

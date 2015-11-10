@@ -72,6 +72,15 @@ def logout():
 def friends():
     return render_template("friends.html", title="Friends")
 
+@app.route('/api/requests', methods=["POST"])
+def api_requests():
+    '''
+    Case1: user accepts request. delete request and add friends
+    Case2: user deletes request. delete request only.
+    Case3: requesting user deletes request. delete request only
+    '''
+    pass
+
 @app.route('/')
 @app.route('/home')
 @app.route('/index')
@@ -87,7 +96,8 @@ def testfriend():
 
 @app.route('/listreq')
 def listfriend():
-    print g.user.friends_requested.one()
+    print g.user.friends_requested.all()
+    print g.user.friend_requests.all()
 
 @app.route('/acceptfriend')
 def acceptfriend():

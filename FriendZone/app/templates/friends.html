@@ -9,46 +9,79 @@
 <div class="tab-content">
     <div class="tab-pane fade in active" id="friends_tab">
         <div class="container top-pad">
-            {% for friend in g.user.friends %}
-            <a href="{{url_for('user_profile', linkname=friend.linkname)}}">
-                <div class="row">
-                    <div class="jumbotron">
-                        <div class="row">
-                            <div class="col-md-4">
-                                <h2>{{friend.name}}</h2>
-                            </div>
-                            <div class="col-md-4">
-                                <h2>{{friend.email}}</h2>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </a>
-            {% endfor %}
+            <table class="table table-hover table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Birthday</th>
+                        <th>Last Seen</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for friend in g.user.friends %}
+                    <tr>
+                        <td>{{friend.name}}</td>
+                        <td>{{friend.email}}</td>
+                        <td>{{friend.bday_str()}}</td>
+                        <td>{{friend.last_seen_str()}}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
     <div class="tab-pane fade in" id="requests_tab">
         <div class="container top-pad">
-            {% for request in g.user.friend_requests %}
-            <div class="row">
-                <div class="jumbotron top-pad">
-                    <div class="col-md-12">
-                        <h2>{{request.requesting_user.name}}</h2>
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
+            <table class="table table-hover table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for req in g.user.friend_requests %}
+                    <tr>
+                        <td>{{req.requesting_user.name}}</td>
+                        <td>{{req.requesting_user.email}}</td>
+                        <td>
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <button class="btn btn-success">Accept</button>
+                                </div>
+                                <div class="col-md-3">
+                                    <button class="btn btn-danger">Delete</button>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
     <div class="tab-pane fade in" id="pending_tab">
         <div class="container top-pad">
-            {% for request in g.user.friends_requested %}
-            <div class="row">
-                <div class="col-md-12">
-                    {{request.requested_user.name}}
-                </div>
-            </div>
-            {% endfor %}
+            <table class="table table-hover table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for req in g.user.friends_requested %}
+                    <tr>
+                        <td>{{req.requested_user.name}}</td>
+                        <td>{{req.requested_user.email}}</td>
+                        <td><button class="btn btn-danger">Delete</button></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
