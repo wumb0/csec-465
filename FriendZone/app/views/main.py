@@ -1,5 +1,5 @@
 from app import db, lm, app
-from flask import render_template, flash, redirect, session, url_for, g, abort
+from flask import render_template, flash, redirect, session, url_for, g, abort, request
 from flask.ext.login import login_user, logout_user, current_user, login_required
 from app.models import *
 from app.crypto import get_hashstr
@@ -11,7 +11,7 @@ from datetime import datetime
 def before_request():
     g.user = current_user
     if g.user.is_authenticated:
-        g.user.last_seen = datetime.utcnow()
+        g.user.last_seen = datetime.now()
         db.session.add(g.user)
         db.session.commit()
 
@@ -72,14 +72,43 @@ def logout():
 def friends():
     return render_template("friends.html", title="Friends")
 
-@app.route('/api/requests', methods=["POST"])
+@app.route('/api/friends', methods=["POST", "GET"])
+@login_required
 def api_requests():
     '''
     Case1: user accepts request. delete request and add friends
     Case2: user deletes request. delete request only.
     Case3: requesting user deletes request. delete request only
+    Case4: user deletes a user from their friends list
     '''
-    pass
+    try:
+        data = request.get_data()
+        key, id = data.split("-")
+        req = Request.query.filter_by(id=id).one()
+    except:
+        try:
+            if key == "del_fr":
+                user = User.query.filter_by(id=id).one()
+                g.user.friends.remove(user)
+                user.friends.remove(g.user)
+                db.session.commit()
+                return "", 200
+        except:
+            return "", 400
+    if key == "add_req" and req.requested_user_id == g.user.id:
+        g.user.friends.append(req.requesting_user)
+        req.requesting_user.friends.append(g.user)
+        db.session.add(req.requesting_user)
+        db.session.add(g.user)
+        db.session.delete(req)
+    elif key == "del_req" and req.requested_user_id == g.user.id:
+        db.session.delete(req)
+    elif key == "del_reqd" and req.requesting_user_id == g.user.id:
+        db.session.delete(req)
+    else:
+        return "", 400
+    db.session.commit()
+    return "", 200
 
 @app.route('/')
 @app.route('/home')

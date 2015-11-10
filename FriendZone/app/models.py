@@ -1,5 +1,6 @@
 from app import db
 from datetime import datetime
+from hashlib import md5
 from elasticsearch_dsl import DocType, String, Date, Integer
 from elasticsearch_dsl.connections import connections
 
@@ -111,7 +112,15 @@ class User(db.Model):
         return self.name
 
     def last_seen_str(self):
-        return self.last_seen.strftime('%A, %B %d %Y %I:%M%p')
+        return self.last_seen.strftime('%A, %B %d, %Y %I:%M%p')
+
+    def avatar(self, size):
+        '''Generates the gravatar URL for the user
+        arg:
+            size - the size of the gravatar requested
+        Returns: The URL for the user's gravatar
+        '''
+        return "http://www.gravatar.com/avatar/{0}?d=mm&s={1}".format(md5(self.email).hexdigest(), str(size))
 
 class Request(db.Model):
     id = db.Column(db.Integer, primary_key=True)

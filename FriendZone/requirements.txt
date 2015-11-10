@@ -1,5 +1,5 @@
 Flask
-Flask-OAuthlib
+elasticsearch_dsl
 Flask-Elasticsearch
 Flask-Login
 Flask-Sqlalchemy

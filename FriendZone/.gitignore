@@ -1,3 +1,4 @@
 flask
 *.pyc
+app.db
 app.vars

@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
-<ul class="nav nav-tabs" id="myTab">
-    <li><a data-toggle="tab" href="#friends_tab">Friends</a></li>
+<ul class="nav nav-tabs" id="tabs">
+    <li class="active"><a data-toggle="tab" href="#friends_tab">Friends</a></li>
     <li><a data-toggle="tab" href="#requests_tab">Friend Requests</a></li>
     <li><a data-toggle="tab" href="#pending_tab">Your Requests</a></li>
 </ul>
@@ -21,10 +21,11 @@
                 <tbody>
                 {% for friend in g.user.friends %}
                     <tr>
-                        <td>{{friend.name}}</td>
+                        <td><a href="{{url_for('user_profile', linkname=friend.linkname)}}">{{friend.name}}</a></td>
                         <td>{{friend.email}}</td>
                         <td>{{friend.bday_str()}}</td>
                         <td>{{friend.last_seen_str()}}</td>
+                        <td><button class="btn btn-danger" id="del_fr-{{friend.id}}">Delete</button></td>
                     </tr>
                 {% endfor %}
                 </tbody>
@@ -49,10 +50,10 @@
                         <td>
                             <div class="row">
                                 <div class="col-md-2">
-                                    <button class="btn btn-success">Accept</button>
+                                    <button id="add_req-{{req.id}}" class="btn btn-success">Accept</button>
                                 </div>
                                 <div class="col-md-3">
-                                    <button class="btn btn-danger">Delete</button>
+                                    <button id="del_req-{{req.id}}" class="btn btn-danger">Delete</button>
                                 </div>
                             </div>
                         </td>
@@ -77,7 +78,7 @@
                     <tr>
                         <td>{{req.requested_user.name}}</td>
                         <td>{{req.requested_user.email}}</td>
-                        <td><button class="btn btn-danger">Delete</button></td>
+                        <td><button id="del_reqd-{{req.id}}" class="btn btn-danger">Delete</button></td>
                     </tr>
                 {% endfor %}
                 </tbody>
@@ -86,3 +87,20 @@
     </div>
 </div>
 {% endblock content %}
+{% block footer %}
+<script type="text/javascript" charset="utf-8">
+$("button").click(function(){
+    var $tr = $(this).closest("tr");
+    $.ajax({
+        url: 'api/friends',
+        type: 'POST',
+        data: this.id,
+        success: function (data, textStatus, xhr) {
+            $tr.find('td').fadeOut(500, function(){
+                $tr.remove();
+            });
+        }
+    });
+});
+</script>
+{% endblock footer %}
