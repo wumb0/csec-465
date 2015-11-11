@@ -29,7 +29,7 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).one()
-        login_user(user)# remember=form.remember.data)
+        login_user(user)
         flash("Logged in sucessfully", category='good')
         return redirect(url_for('profile'))
     else:
