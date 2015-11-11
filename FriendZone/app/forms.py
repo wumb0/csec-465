@@ -1,4 +1,5 @@
 from flask.ext.wtf import Form
+import re
 from wtforms import PasswordField, StringField, SubmitField, BooleanField, DateField, widgets, SelectField
 from wtforms.validators import DataRequired, Length, ValidationError
 from wtforms.fields import TextAreaField
@@ -48,8 +49,9 @@ class SignupForm(LoginForm):
             raise ValidationError("Linkname must be alphanumeric only")
 
     def validate_name(self, field):
-        if not field.data.isalnum():
-            raise ValidationError("Name must be alphanumeric only")
+        m = re.compile('^[\w\s]+$')
+        if not m.match(field.data)
+            raise ValidationError("Name must be alphanumeric/spaces only")
 
     def validate_email(self, field):
         if len(User.query.filter_by(email=field.data).all()):
