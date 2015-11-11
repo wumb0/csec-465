@@ -50,7 +50,7 @@ class SignupForm(LoginForm):
 
     def validate_name(self, field):
         m = re.compile('^[\w\s]+$')
-        if not m.match(field.data)
+        if not m.match(field.data):
             raise ValidationError("Name must be alphanumeric/spaces only")
 
     def validate_email(self, field):
