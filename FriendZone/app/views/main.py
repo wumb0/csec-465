@@ -183,6 +183,7 @@ def user_profile(linkname):
     return render_template('profile.html', title='Profile', user=user, post_form=post_form, posts=posts)
 
 @app.route('/search', methods=['GET', 'POST'])
+@login_required
 def search():
     form = SearchForm()
     results = []
