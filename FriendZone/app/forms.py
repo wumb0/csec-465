@@ -44,6 +44,8 @@ class SignupForm(LoginForm):
     def validate_linkname(self, field):
         if len(User.query.filter_by(linkname=field.data).all()):
             raise ValidationError("That linkname has already been chosen!")
+        if not field.data.isalnum():
+            raise ValidationError("Linkname must be alphanumeric only")
 
     def validate_email(self, field):
         if len(User.query.filter_by(email=field.data).all()):
