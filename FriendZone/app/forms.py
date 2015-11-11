@@ -47,6 +47,10 @@ class SignupForm(LoginForm):
         if not field.data.isalnum():
             raise ValidationError("Linkname must be alphanumeric only")
 
+    def validate_name(self, field):
+        if not field.data.isalnum():
+            raise ValidationError("Name must be alphanumeric only")
+
     def validate_email(self, field):
         if len(User.query.filter_by(email=field.data).all()):
             raise ValidationError("That email address is already in use")
