@@ -7,4 +7,5 @@ Flask-Admin
 Flask-WTF
 Flask-Migrate
 flup
-Flask-Mail
+six
+gunicorn
