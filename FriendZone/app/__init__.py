@@ -5,7 +5,6 @@ import os
 from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.login import LoginManager
-from flask_oauthlib.client import OAuth
 from config import basedir
 from flask.ext.admin import Admin
 from flask_admin.base import MenuLink
