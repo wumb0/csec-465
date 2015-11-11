@@ -29,7 +29,7 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).one()
-        login_user(user, remember=form.remember.data)
+        login_user(user)# remember=form.remember.data)
         flash("Logged in sucessfully", category='good')
         return redirect(url_for('profile'))
     else:
@@ -58,12 +58,11 @@ def signup():
         user_es = User_ES(user_id=user.id, email=form.email.data,
                     name=form.name.data,
                     linkname=form.linkname.data,
-                    nickname=form.nickname.data
-                    );
+                    nickname=form.nickname.data)
         user_es.save()
         try:
-            logout_user()
             session.clear()
+            logout_user()
         except: pass
         flash("Registered successfully!", category='good')
         return redirect(url_for('login'))
@@ -73,7 +72,6 @@ def signup():
     return render_template('signup.html', title="Signup", form=form)
 
 @app.route('/logout')
-@login_required
 def logout():
     logout_user()
     session.clear()
