@@ -13,24 +13,35 @@
 {% if results_type == "Users" %}
 {% for user in results %}
 <div class="row field-sep">
-    <div class="jumbotron">
-        <div class="row">
-            <a href={{url_for('user_profile', linkname=user.linkname)}}>{{user.name}}</a>
-        </div>
-        <div class="row">
-            <em>"{{user.nickname}}"</em>
+    <div class="col-md-12">
+        <div class="jumbotron">
+            <div class="row">
+                <div class="col-md-12">
+                    <a href={{url_for('user_profile', linkname=user.linkname)}}>{{user.name}}</a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <em>"{{user.nickname}}"</em>
+                </div>
+            </div>
         </div>
     </div>
 </div>
-{% endfor %}
-{% endif %}
-{% if results_type == "Posts" %}
-{% for post in results %}
-<div class="row field-sep">
-    <div class="jumbotron">
-        <div class="row">
-            <a href={{url_for('user_profile', linkname=post.user_linkname)}}>{{post.user_name}}</a></td>
-            {{post.content|safe}}
+    {% endfor %}
+    {% endif %}
+    {% if results_type == "Posts" %}
+    {% for post in results %}
+    <div class="row field-sep">
+        <div class="col-md-12">
+            <div class="jumbotron">
+                <div class="row">
+                    <div class="col-md-12">
+                        <a href={{url_for('user_profile', linkname=post.user_linkname)}}>{{post.user_name}}</a></td>
+                        {{post.content|safe}}
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
