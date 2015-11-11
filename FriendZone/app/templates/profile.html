@@ -56,23 +56,25 @@
                 </div>
                 {% for post in posts %}
                 <div class="row field-sep">
-                    <div class="jumbotron">
-                        <div class="row">
-                            <img src="{{post.poster.avatar(40)}}">
-                        {% if g.user.id == user.id or g.user.id == post.poster_id %}
-                            <button type="button" class="close" id="del_post-{{post.id}}" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        {% endif %}
-                        </div>
-                        <div class="row">
-                            <a href="{{url_for('user_profile', linkname=post.poster.linkname)}}">{{post.poster}}</a>
-                        </div>
-                        <div class="row">
-                            {{post.timestamp_str()}}
-                        </div>
-                        <div class="row">
-                            {{post.content|safe}}
+                    <div class="col-md-12">
+                        <div class="jumbotron">
+                            <div class="row">
+                                <img src="{{post.poster.avatar(40)}}">
+                            {% if g.user.id == user.id or g.user.id == post.poster_id %}
+                                <button type="button" class="close" id="del_post-{{post.id}}" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            {% endif %}
+                            </div>
+                            <div class="row">
+                                <a href="{{url_for('user_profile', linkname=post.poster.linkname)}}">{{post.poster}}</a>
+                            </div>
+                            <div class="row">
+                                {{post.timestamp_str()}}
+                            </div>
+                            <div class="row">
+                                {{post.content|safe}}
+                            </div>
                         </div>
                     </div>
                 </div>
