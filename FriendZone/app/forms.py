@@ -51,7 +51,7 @@ class SignupForm(LoginForm):
 
     def validate_birthday(self, field):
         if field.data.year < 1900:
-            raise ValidationError("Year must be => 1990")
+            raise ValidationError("Year must be => 1900")
 
 class CKTextAreaWidget(widgets.TextArea):
     '''Fancy text editor widget
