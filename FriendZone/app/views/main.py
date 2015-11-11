@@ -61,6 +61,10 @@ def signup():
                     nickname=form.nickname.data
                     );
         user_es.save()
+        try:
+            logout_user()
+            session.clear()
+        except: pass
         flash("Registered successfully!", category='good')
         return redirect(url_for('login'))
     else:
