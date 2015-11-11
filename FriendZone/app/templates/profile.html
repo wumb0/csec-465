@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="row">
-    <div class="col-md-3">
+    <div class="col-md-3 col-sm-12">
         <div class="row">
             <h1>{{user.name}}</h1>
         </div>
@@ -12,7 +12,7 @@
             <img src="{{user.avatar(200)}}">
         </div>
     </div>
-    <div class="col-md-7 top-pad">
+    <div class="col-md-7 col-sm-12 top-pad">
         <div class="tab-content">
             <div class="tab-pane fade in active" id="posts">
                 <div class="modal fade" id="post-modal" tabindex="-1" role="dialog" aria-labelledby="modal1">
@@ -120,7 +120,7 @@
             </div>
         </div>
     </div>
-    <div class="col-md-2">
+    <div class="col-md-2 col-sm-12">
         <div class="list-group top-pad">
             <a class="list-group-item active" data-toggle="tab" href="#posts" id="post_tabn">Posts</a>
             <a class="list-group-item" data-toggle="tab" href="#about" id="about_tabn">About</a>
