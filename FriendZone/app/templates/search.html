@@ -28,18 +28,17 @@
         </div>
     </div>
 </div>
-    {% endfor %}
-    {% endif %}
-    {% if results_type == "Posts" %}
-    {% for post in results %}
-    <div class="row field-sep">
-        <div class="col-md-12">
-            <div class="jumbotron">
-                <div class="row">
-                    <div class="col-md-12">
-                        <a href={{url_for('user_profile', linkname=post.user_linkname)}}>{{post.user_name}}</a></td>
-                        {{post.content|safe}}
-                    </div>
+{% endfor %}
+{% endif %}
+{% if results_type == "Posts" %}
+{% for post in results %}
+<div class="row field-sep">
+    <div class="col-md-12">
+        <div class="jumbotron">
+            <div class="row">
+                <div class="col-md-12">
+                    <a href={{url_for('user_profile', linkname=post.user_linkname)}}>{{post.user_name}}</a>
+                    {{post.content|safe}}
                 </div>
             </div>
         </div>
